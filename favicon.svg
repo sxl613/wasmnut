@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Background circle -->
+  <circle cx="50" cy="50" r="48" fill="#2b3f6b"/>
+  
+  <!-- Letters arranged in a circular pattern -->
+  <!-- Each letter has a subtle rotation and offset -->
+  
+  <!-- S -->
+  <path d="M35 30 C45 30, 45 35, 45 40 C45 45, 35 45, 35 50 C35 55, 45 55, 45 60" 
+        stroke="white" fill="none" stroke-width="8" stroke-linecap="round"/>
+  
+  <!-- Z -->
+  <path d="M65 35 L55 35 L65 55 L55 55" 
+        stroke="white" fill="none" stroke-width="8" stroke-linecap="round"/>
+  
+  <!-- C -->
+  <path d="M60 65 C50 65, 45 65, 45 70 C45 75, 50 75, 60 75" 
+        stroke="white" fill="none" stroke-width="8" stroke-linecap="round"/>
+  
+  <!-- Z -->
+  <path d="M25 45 L15 45 L25 65 L15 65" 
+        stroke="white" fill="none" stroke-width="8" stroke-linecap="round"/>
+        
+  <!-- Inner decorative circle -->
+  <circle cx="50" cy="50" r="25" fill="none" stroke="white" stroke-width="2" opacity="0.3"/>
+</svg>
