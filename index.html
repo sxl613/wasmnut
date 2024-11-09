@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <title>WASM Donut</title>
+    <style>
+body {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 10px;
+            padding: 20px;
+            min-height: 100vh;
+            margin: 0;
+            background: #333; /* Optional: adds contrast around the black pre elements */
+        }
+        pre {
+            font-family: monospace;
+            white-space: pre;
+            background: black;
+            color: white;
+            line-height: 1;
+            font-size: 14px;
+            margin: 0;
+            padding: 20px;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+    <pre id="donut"></pre>
+    <pre id="sphere"></pre>
+    <pre id="octahedron"></pre>
+    <pre id="sierpinski"></pre>
+    <script>
+        window.Module = {
+            onRuntimeInitialized: function() {
+                // Get both output elements
+                const donutElement = document.getElementById('donut');
+                const sphereElement = document.getElementById('sphere');
+                const octaElement = document.getElementById('octahedron');
+                const sierpinskiElement = document.getElementById('sierpinski');
+                
+                function updateFrames() {
+                    // Get both frames
+                    const donutFrame = Module.ccall('get_donut_frame', 'string', [], []);
+                    const sphereFrame = Module.ccall('get_sphere_frame', 'string', [], []);
+                    const octaFrame = Module.ccall('get_octa_frame', 'string', [], []);
+                    const sierpinskiFrame = Module.ccall('get_sierpinski_frame', 'string', [], []);
+                    
+                    // Update both elements
+                    donutElement.textContent = donutFrame;
+                    sphereElement.textContent = sphereFrame;
+                    octaElement.textContent = octaFrame;
+                    sierpinskiElement.textContent = sierpinskiFrame;
+                    
+                    requestAnimationFrame(updateFrames);
+                }
+                
+                requestAnimationFrame(updateFrames);
+            }
+        };
+    </script>
+    <script async src="donut.js"></script>
+</body>
+</html>
