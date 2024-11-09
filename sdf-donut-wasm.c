@@ -10,12 +10,15 @@
 #define MAX_STEPS 30
 #define SM 0.01f
 #define EPSILON 0.001f
+#define ITERATIONS 10
 
 // Global buffer for output
 char donut_buffer[HEIGHT * (WIDTH + 1) + 1];
 char sphere_buffer[HEIGHT * (WIDTH + 1) + 1];
 char octa_buffer[HEIGHT * (WIDTH + 1) + 1];
 char sierpinski_buffer[HEIGHT * (WIDTH + 1) + 1];
+char ttorus_buffer[HEIGHT * (WIDTH + 1) + 1];
+char org_buffer[HEIGHT * (WIDTH + 1) + 1];
 
 typedef struct Vec3 {
   float x;
@@ -143,6 +146,87 @@ float wave(float x, float y, float z) {
   return sphere(x, y - wave, z);
 }
 
+float twisted_torus(float x, float y, float z) {
+    // Apply twist based on vertical position
+    float twist = y * 3.0f + c * 0.1f;
+    float xx = x * cosf(twist) - z * sinf(twist);
+    float zz = x * sinf(twist) + z * cosf(twist);
+    
+    // Standard torus SDF
+    float xy_d = sqrtf(xx * xx + zz * zz) - RADIUS;
+    float d = sqrtf(xy_d * xy_d + y * y);
+    return d - THICKNESS/2;
+}
+
+float smin_poly(float a, float b, float k) {
+    float h = fmaxf(k - fabsf(a - b), 0.0f) / k;
+    return fminf(a, b) - h * h * k * 0.25f;
+}
+
+// Smooth maximum functions (useful for additive blending)
+float smax_poly(float a, float b, float k) {
+    return -smin_poly(-a, -b, k);
+}
+
+float dna_helix(float x, float y, float z) {
+    // Rotation animation
+    float time = c * 0.002f;
+    
+    // First helix strand
+    float theta1 = atan2f(z, x) + time;
+    float h1 = y - 0.5f * sinf(theta1);
+    float r1 = sqrtf(x*x + z*z) - RADIUS;
+    float d1 = sqrtf(r1*r1 + h1*h1) - 0.1f;
+    
+    // Second helix strand (offset by p)
+    float theta2 = theta1 + M_PI;
+    float h2 = y - 0.5f * sinf(theta2);
+    float d2 = sqrtf(r1*r1 + h2*h2) - 0.1f;
+    
+    // Combine with smooth minimum
+    return smin_poly(d1, d2, 0.3f);
+}
+
+float gyroid(float x, float y, float z) {
+    float scale = 0.04f;
+    x *= scale;
+    y *= scale;
+    z *= scale;
+    
+    return (sinf(x) * cosf(y) + sinf(y) * cosf(z) + sinf(z) * cosf(x)) / scale - 0.1f;
+}
+
+float cube_sphere_morph(float x, float y, float z) {
+    float morph = (sinf(c * 0.05f) + 1.0f) * 0.1f; // 0 to 1 oscillation
+    
+    // Cube SDF
+    float cube = fmaxf(fmaxf(fabsf(x), fabsf(y)), fabsf(z)) - RADIUS;
+    
+    // Sphere SDF
+    float sphere = sqrtf(x*x + y*y + z*z) - RADIUS;
+    
+    // Smooth interpolation between shapes
+    return cube * (1.0f - morph) + sphere * morph;
+}
+
+float organic_shape(float x, float y, float z) {
+    // Base sphere
+    float d = sphere(x, y, z);
+    
+    // Add bubbles using smooth subtraction
+    for(int i = 0; i < 5; i++) {
+        float angle = (float)i * 0.05f * M_PI / 5.0f + c * 0.003f;
+        float sx = x - 0.7f * cosf(angle);
+        float sz = z - 0.7f * sinf(angle);
+        float bubble = sphere(sx, y, sz) * 0.5f;
+        d = smax_poly(d, -bubble, 0.1f);
+    }
+    
+    // Add wavy distortion
+    float wave = 0.1f * sinf(3.0f * x + c * 0.1f) * sinf(3.0f * z + c * 0.11f);
+    return d + wave;
+}
+
 EMSCRIPTEN_KEEPALIVE
 const char *get_donut_frame() {
   loop(donut_buffer, &donut_3d);
@@ -165,6 +249,18 @@ EMSCRIPTEN_KEEPALIVE
 const char *get_sierpinski_frame() {
   loop(sierpinski_buffer, &wave);
   return sierpinski_buffer;
+}
+
+EMSCRIPTEN_KEEPALIVE
+const char *get_ttorus_frame() {
+  loop(ttorus_buffer, &dna_helix);
+  return ttorus_buffer;
+}
+
+EMSCRIPTEN_KEEPALIVE
+const char *get_organic_frame() {
+  loop(org_buffer, &cube_sphere_morph);
+  return org_buffer;
 }
 
 int main() { return 0; }

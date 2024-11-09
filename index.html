@@ -28,10 +28,12 @@ body {
     </style>
 </head>
 <body>
-    <pre id="donut"></pre>
-    <pre id="sphere"></pre>
-    <pre id="octahedron"></pre>
-    <pre id="sierpinski"></pre>
+    <pre id="donut" style="color: violet;"></pre>
+    <pre id="ttorus" style="color: steelblue;"></pre>
+    <pre id="organic" style="color: thistle;"></pre>
+    <pre id="sierpinski" style="color: brown;"></pre>
+    <pre id="octahedron" style="color: cadetblue;"></pre>
+    <pre id="sphere" style="color: #abc;"></pre>
     <script>
         window.Module = {
             onRuntimeInitialized: function() {
@@ -40,6 +42,8 @@ body {
                 const sphereElement = document.getElementById('sphere');
                 const octaElement = document.getElementById('octahedron');
                 const sierpinskiElement = document.getElementById('sierpinski');
+                const ttorusElement = document.getElementById('ttorus');
+                const organicElement = document.getElementById('organic');
                 
                 function updateFrames() {
                     // Get both frames
@@ -47,12 +51,16 @@ body {
                     const sphereFrame = Module.ccall('get_sphere_frame', 'string', [], []);
                     const octaFrame = Module.ccall('get_octa_frame', 'string', [], []);
                     const sierpinskiFrame = Module.ccall('get_sierpinski_frame', 'string', [], []);
+                    const ttorusFrame = Module.ccall('get_ttorus_frame', 'string', [], []);
+                    const organicFrame = Module.ccall('get_organic_frame', 'string', [], []);
                     
                     // Update both elements
                     donutElement.textContent = donutFrame;
                     sphereElement.textContent = sphereFrame;
                     octaElement.textContent = octaFrame;
                     sierpinskiElement.textContent = sierpinskiFrame;
+                    ttorusElement.textContent = ttorusFrame;
+                    organicElement.textContent = organicFrame;
                     
                     requestAnimationFrame(updateFrames);
                 }
